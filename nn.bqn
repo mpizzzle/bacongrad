@@ -28,135 +28,29 @@ ys ← F xs
 #d3 ← c + a × b
 #h ÷˜ d3 - d1
 
-#Value ← {
-#  O ← ⊢
-#  B ← ⊢
-#  c ← ⟨⟩
-#  d ← 𝕩
-#  g ← 0
-#  this ← 𝕤
+#Lol ← {𝕤
+#  h ← 0.0001
+#  aa ← Value 2.0
+#  bb ← Value ¯3.0
+#  cc ← Value 10
+#  ee ← (aa.Mul bb)
+#  dd ← (ee.Add cc)
+#  ff ← Value ¯2.0
+#  l1 ← (dd.Mul ff).Repr@
 #
-#  Back ⇐ {
-#    𝕤 ⋄ B@
-#  }
+#  aa ↩ Value 2.0
+#  bb ↩ Value ¯3.0
+#  cc ↩ Value 10
+#  ee ↩ (aa.Mul bb)
+#  dd ↩ (ee.Add cc)
+#  dd.Da h + dd.Repr@
+#  ff ↩ Value ¯2.0
+#  l2 ← (dd.Mul ff).Repr@
 #
-#  Show ⇐ {𝕤
-#    lab ← "operation"‿"children"‿"data"‿"gradient"
-#    ⍉> lab ⋈ o‿c‿d‿g
-#  }
-#
-#  Repr ⇐ {
-#    𝕤 ⋄ d
-#  }
-#
-#  Grad ⇐ {
-#    𝕤 ⋄ g
-#  }
-#
-#  Chil ⇐ {
-#    𝕤 ⋄ c
-#  }
-#
-#  Oper ⇐ {
-#    𝕤 ⋄ o
-#  }
-#
-#  Ba ⇐ {
-#    B ↩ 𝕏
-#  }
-#
-#  Op ⇐ {
-#    O ↩ 𝕏
-#  }
-#
-#  Ch ⇐ {
-#    c ↩ 𝕩
-#  }
-#
-#  Gr ⇐ {
-#    g ↩ 𝕩
-#  }
-#
-#  Da ⇐ {
-#    d ↩ 𝕩
-#  }
-#
-#  Apply ← {
-#    temp ← Value 𝕎´ 𝕩
-#    temp.Op 𝕨
-#    temp.Ch this⋈𝕩
-#    temp
-#  }
-#
-#  Tanh ⇐ {𝕤
-#    F ← •math.Tanh
-#    temp ← Value F d
-#    temp.Op f
-#    temp.Ch d
-#
-#    Backwards ← {𝕤
-#      g ↩ 1 - 2 ⋆˜ temp.Repr@
-#    }
-#
-#    temp.Ba backwards
-#    temp
-#  }
-#
-#  Add ⇐ {
-#    F ← +
-#
-#    i ← 𝕩
-#    out ← f Apply d ⋈ 𝕩.Repr@
-#
-#    Backwards ← {𝕤
-#      i.Gr 1 × out.Grad@
-#      g ↩ 1 × out.Grad@
-#    }
-#
-#    out.Ba backwards
-#    out
-#  }
-#
-#  Mul ⇐ {
-#    F ← ×
-#
-#    i ← 𝕩
-#    out ← f Apply d ⋈ 𝕩.Repr@
-#
-#    Backwards ← {𝕤
-#      i.Gr d × out.Grad@
-#      g ↩ (i.Repr@) × out.Grad@
-#    }
-#
-#    out.Ba backwards
-#    out
-#  }
+#  (l2 - l1) ÷ h
 #}
 
-
-Lol ← {𝕤
-  h ← 0.0001
-  aa ← Value 2.0
-  bb ← Value ¯3.0
-  cc ← Value 10
-  ee ← (aa.Mul bb)
-  dd ← (ee.Add cc)
-  ff ← Value ¯2.0
-  l1 ← (dd.Mul ff).Repr@
-
-  aa ↩ Value 2.0
-  bb ↩ Value ¯3.0
-  cc ↩ Value 10
-  ee ↩ (aa.Mul bb)
-  dd ↩ (ee.Add cc)
-  dd.Da h + dd.Repr@
-  ff ↩ Value ¯2.0
-  l2 ← (dd.Mul ff).Repr@
-
-  (l2 - l1) ÷ h
-}
-
-Lol@
+#Lol@
 
 aa ← Value 2
 #aa.Gr ¯3 × ¯2
@@ -173,6 +67,7 @@ cc.Show@
 ee ← (aa.Mul bb)
 #ee.Gr ¯2 × 1
 ee.Show@
+#(⊑ ee.Chil@).Show@
 
 dd ← (ee.Add cc)
 #dd.Gr ¯2
@@ -249,8 +144,12 @@ b.Show@
 x1w1x2w2.Back@
 x1w1.Show@
 x2w2.Show@
-qwer ← ⊑ x2w2.Chil@
-(Qwer@).Show@
+
+{ 𝕩.Show@ }¨ (x1w1x2w2.Chil@)
+{ 𝕩.Show@ }¨ (x1w1.Chil@)
+
+x2w2.Show@
+x1w1.Show@
 
 x1w1.Back@
 x2w2.Back@
