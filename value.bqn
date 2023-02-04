@@ -8,14 +8,11 @@ Value ⇐ {
     c ← ⟨⟩
     d ← 0
     g ← 0
-
-    Back ⇐ {
-      𝕤 ⋄ B@
-    }
+    l ← ""
 
     Show ⇐ {𝕤
-      lab ← "operation"‿"children"‿"data"‿"gradient"
-      ⍉> lab ⋈ o‿c‿d‿g
+      lab ← "label"‿"operation"‿"children"‿"data"‿"gradient"
+      ⍉> lab ⋈ l‿o‿c‿d‿g
     }
 
     Repr ⇐ {
@@ -32,6 +29,10 @@ Value ⇐ {
 
     Oper ⇐ {
       𝕤 ⋄ o
+    }
+
+    Label ⇐ {
+      𝕤 ⋄ l
     }
 
     Ba ⇐ {
@@ -54,6 +55,29 @@ Value ⇐ {
       d ↩ 𝕩
     }
 
+    La ⇐ {
+      l ↩ 𝕩
+    }
+
+
+    Back ⇐ {
+      𝕤 ⋄ B@
+    }
+
+    Backward ⇐ {𝕤
+      v ← ⟨⟩
+
+      TopoSort ← {
+        oldV ← v
+        TopoSort¨ oldV (¬∘∊/⊣)˜ ∾ { 𝕩.Chil@ }¨ 𝕩
+        v ↩ ⍷ 𝕩 ∾ v
+        v
+      }
+
+      { 𝕩.Back@ }¨ TopoSort this
+      v
+    }
+
     Apply ← {
       temp ← Value 𝕎´ { 𝕩.Repr@ }¨ 𝕩
       temp.Op 𝕨
@@ -65,13 +89,13 @@ Value ⇐ {
       F ← •math.Tanh
       temp ← Value F d
       temp.Op f
-      temp.Ch d
+      temp.Ch ⋈this
 
-      Backwards ← {𝕤
-        g ↩ 1 - 2 ⋆˜ temp.Repr@
+      BB ← {𝕤
+        g ↩ g + 1 - 2 ⋆˜ temp.Repr@
       }
 
-      temp.Ba backwards
+      temp.Ba bb
       temp
     }
 
@@ -81,12 +105,12 @@ Value ⇐ {
       i ← 𝕩
       out ← f Apply this ⋈ 𝕩
 
-      Backwards ← {𝕤
-        i.Gr 1 × out.Grad@
-        g ↩ 1 × out.Grad@
+      BB ← {𝕤
+        i.Gr (i.Grad@) + 1 × out.Grad@
+        g ↩ g + 1 × out.Grad@
       }
 
-      out.Ba backwards
+      out.Ba bb
       out
 
     }
@@ -97,12 +121,12 @@ Value ⇐ {
       i ← 𝕩
       out ← f Apply this ⋈ 𝕩
 
-      Backwards ← {𝕤
-        i.Gr d × out.Grad@
-        g ↩ (i.Repr@) × out.Grad@
+      BB ← {𝕤
+        i.Gr (i.Grad@) + d × out.Grad@
+        g ↩ g + (i.Repr@) × out.Grad@
       }
 
-      out.Ba backwards
+      out.Ba bb
       out
     }
 
