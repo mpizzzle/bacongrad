@@ -1,6 +1,6 @@
 Value ⇐ {
   obj ← {
-    this⇐@
+    this ⇐ @
     SetThis ⇐ { !this≡@ ⋄ this↩𝕩 }
 
     O ← ⊢
@@ -59,7 +59,6 @@ Value ⇐ {
       l ↩ 𝕩
     }
 
-
     Back ⇐ {
       𝕤 ⋄ B@
     }
@@ -79,24 +78,24 @@ Value ⇐ {
     }
 
     Apply ← {
-      temp ← Value 𝕎´ { 𝕩.Repr@ }¨ 𝕩
-      temp.Op 𝕨
-      temp.Ch 𝕩
-      temp
+      out ← Value 𝕎´ { 𝕩.Repr@ }¨ 𝕩
+      out.Op 𝕨
+      out.Ch 𝕩
+      out
     }
 
     Tanh ⇐ {𝕤
       F ← •math.Tanh
-      temp ← Value F d
-      temp.Op f
-      temp.Ch ⋈this
+      out ← Value F d
+      out.Op f
+      out.Ch ⋈this
 
       BB ← {𝕤
-        g ↩ g + 1 - 2 ⋆˜ temp.Repr@
+        g ↩ g + 1 - 2 ⋆˜ (out.Repr@) × out.Grad@
       }
 
-      temp.Ba bb
-      temp
+      out.Ba bb
+      out
     }
 
     Add ⇐ {
@@ -112,7 +111,6 @@ Value ⇐ {
 
       out.Ba bb
       out
-
     }
 
     Mul ⇐ {
@@ -130,6 +128,46 @@ Value ⇐ {
       out
     }
 
+    Exp ⇐ {𝕤
+      F ← ⋆
+
+      out ← Value F d
+      out.Op f
+      out.Ch ⋈this
+
+      BB ← {𝕤
+        g ↩ g + out.Grad@
+      }
+
+      out.Ba bb
+      out
+    }
+
+    Pow ⇐ {
+      F ← ⋆⟜𝕩
+      out ← Value F d
+      out.Op f
+      out.Ch ⋈this
+
+      BB ← {𝕤
+        g ↩ g + 𝕩 × (out.Repr@) ⋆ 1 -˜ 𝕩
+      }
+
+      out.Ba bb
+      out
+    }
+
+    Neg ⇐ {𝕤
+      this.Mul Value ¯1
+    }
+
+    Sub ⇐ {
+      this.Add 𝕩.Neg@
+    }
+
+    Div ⇐ {
+      this.Mul 𝕩.Pow ¯1
+    }
   }
 
   obj.SetThis obj

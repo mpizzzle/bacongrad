@@ -78,8 +78,11 @@ n ← x1w1x2w2.Add b
 n.Show@
 
 o ← n.Tanh@
+
+
 o.Gr 1
 o.Show@
+#((Value 2).Exp@).Show@
 
 > { 𝕩.Show@ }¨ o.Backward@
 
@@ -87,4 +90,7 @@ aaa ← Value 7
 bbb ← aaa.Add aaa
 bbb.Gr 1.0
 > { 𝕩.Show@ }¨ bbb.Backward@
+
+(((Value 9).Div Value 3).Neg@).Show@
+((Value 9).Sub Value 4).Show@
 
