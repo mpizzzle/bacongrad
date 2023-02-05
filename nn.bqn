@@ -75,22 +75,11 @@ b.Show@
 
 n ← x1w1x2w2.Add b
 #n.Gr 1 - 2 ⋆˜ (n.Tanh@).Repr@
-n.Show@
 
-o ← n.Tanh@
-
+#o ← n.Tanh@
+en ← (n.Mul Value 2).Exp@
+o ← (en.Sub Value 1).Div (en.Add Value 1)
 
 o.Gr 1
-o.Show@
-#((Value 2).Exp@).Show@
-
 > { 𝕩.Show@ }¨ o.Backward@
-
-aaa ← Value 7
-bbb ← aaa.Add aaa
-bbb.Gr 1.0
-> { 𝕩.Show@ }¨ bbb.Backward@
-
-(((Value 9).Div Value 3).Neg@).Show@
-((Value 9).Sub Value 4).Show@
 

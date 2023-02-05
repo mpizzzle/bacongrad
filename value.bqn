@@ -136,7 +136,7 @@ Value ⇐ {
       out.Ch ⋈this
 
       BB ← {𝕤
-        g ↩ g + out.Grad@
+        g ↩ g + (out.Repr@) × out.Grad@
       }
 
       out.Ba bb
@@ -145,12 +145,14 @@ Value ⇐ {
 
     Pow ⇐ {
       F ← ⋆⟜𝕩
+      i ← 𝕩
       out ← Value F d
       out.Op f
       out.Ch ⋈this
 
+
       BB ← {𝕤
-        g ↩ g + 𝕩 × (out.Repr@) ⋆ 1 -˜ 𝕩
+        g ↩ g + (i × d ⋆ 1 -˜ i) × out.Grad@
       }
 
       out.Ba bb
