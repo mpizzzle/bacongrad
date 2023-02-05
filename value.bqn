@@ -73,6 +73,7 @@ Value ⇐ {
         v
       }
 
+      this.Gr 1
       { 𝕩.Back@ }¨ TopoSort this
       v
     }

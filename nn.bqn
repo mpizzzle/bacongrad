@@ -1,44 +1,89 @@
-⟨Gnuplot⟩ ← •Import "Gnuplot.bqn"
 ⟨Value⟩ ← •Import "value.bqn"
 
-F ← { (3 × 𝕩 ⋆ 2) + (¯4 × 𝕩) + 5 }
+R ← {𝕤
+  (1 -˜ 2 × •rand.Range ÷ ⊢) 1 -˜ 2 ⋆ 32
+}
 
-h ← 0.000001
+Neuron ← {
+  w ← (Value R)¨ ↕𝕩
+  b ← Value R@
+  b.La 'b'
 
-xs ← 5-˜4÷˜↕40
-ys ← F xs
+  Call ⇐ {
+    act ← b { 𝕨.Add 𝕩 }´ (w { 𝕨.Mul 𝕩 }¨ 𝕩)
+    act.Tanh@
+  }
 
-#plt ← Gnuplot ""
-#plt.Plot (⍉xs≍ys)‿"lw 2 lc rgb 'black'"
-#plt.Show @
+  Params ⇐ {𝕤
+   w ∾ b
+  }
+}
 
-aa ← Value 2
-#aa.Gr ¯3 × ¯2
+Layer ← {
+  d‿c ← 𝕩
+  n ← (Neuron d˙)¨ ↕c
 
-bb ← Value ¯3
-#bb.Gr 2 × ¯2
+  Call ⇐ {
+    𝕩⊸{ 𝕩.Call 𝕨 }¨ n
+  }
 
-cc ← Value 10
-#cc.Gr ¯2 × 1
+  Params ⇐ {𝕤
+    ∾ { 𝕩.Params@ }¨ n
+  }
+}
 
-ee ← (aa.Mul bb)
-#ee.Gr ¯2 × 1
+MLP ← {
+  layers ← { Layer 𝕩 }˘ 2 ↕ 𝕩
 
-dd ← (ee.Add cc)
-#dd.Gr ¯2
+  Call ⇐ {
+    o ← 𝕩 { 𝕨.Call 𝕩 }´ ⌽ layers
+    (1=≠) ◶ ⊢‿⊑ o
+  }
 
-ff ← Value ¯2
-#ff.Gr 4
+  Params ⇐ {𝕤
+    ∾ { 𝕩.Params@ }¨ layers
+  }
+}
 
-l ← dd.Mul ff
-l.Gr 1
+#asdf ← (Neuron 2).Call x
+#asdf.Gr 1
+#> { 𝕩.Show@ }¨  asdf.Backward@
 
-l.Backward@
+#l ← Layer 2‿3
+#ns ← > { 𝕩.Show@ } ¨ l.Call Value¨ 2‿3
+#> { 𝕩.Backward@ }¨ ns
 
-#th ← •math.Tanh 5 -˜ 5 ÷˜ ↕50
-#plt ← Gnuplot ""
-#plt.Plot th‿"lw 2 lc rgb 'black'"
-#plt.Show @
+m ← MLP 3‿4‿4‿1
+
+#out ← m.Call Value¨ 1‿2‿3
+#out.Gr 1
+#out.Backward@
+
+xs ← Value⚇0 ⟨2,3,¯1⟩‿⟨3,¯1,0.5⟩‿⟨0.5,1,1⟩‿⟨1,1,¯1⟩
+ys ← Value¨ 1‿¯1‿¯1‿1
+
+yp ← m.Call¨ xs
+loss ← { 𝕨.Add 𝕩 }´ yp { (𝕨.Sub 𝕩).Pow 2 }¨ ys
+•Show { 𝕩.Repr@ }¨ yp
+•Show loss.Repr@
+
+{ 𝕩.Gr 0 }¨ m.Params@
+loss.Backward@
+{ 𝕩.Da (𝕩.Repr@) + ¯0.01 × 𝕩.Grad@ }¨ m.Params@
+
+yp ↩ m.Call¨ xs
+loss ↩ { 𝕨.Add 𝕩 }´ yp { (𝕨.Sub 𝕩).Pow 2 }¨ ys
+•Show { 𝕩.Repr@ }¨ yp
+•Show loss.Repr@
+
+{ 𝕩.Gr 0 }¨ m.Params@
+loss.Backward@
+{ 𝕩.Da (𝕩.Repr@) + ¯0.01 × 𝕩.Grad@ }¨ m.Params@
+
+yp ↩ m.Call¨ xs
+loss ↩ { 𝕨.Add 𝕩 }´ yp { (𝕨.Sub 𝕩).Pow 2 }¨ ys
+•Show { 𝕩.Repr@ }¨ yp
+loss.Repr@
 
 x1 ← Value 2.0
 x1.La "x1"
@@ -78,8 +123,8 @@ n ← x1w1x2w2.Add b
 
 #o ← n.Tanh@
 en ← (n.Mul Value 2).Exp@
-o ← (en.Sub Value 1).Div (en.Add Value 1)
+oo ← (en.Sub Value 1).Div (en.Add Value 1)
 
-o.Gr 1
-> { 𝕩.Show@ }¨ o.Backward@
+oo.Gr 1
+> { 𝕩.Show@ }¨ oo.Backward@
 
