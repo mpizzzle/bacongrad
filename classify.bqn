@@ -1,14 +1,11 @@
 ⟨Value⟩ ← •Import "value.bqn"
 ⟨MLP⟩ ← •Import "nn.bqn"
 
-#debug ← •BQN ⊑ •FLines "debug_weights.txt"
-
 m ← MLP 3‿4‿4‿1
-#debug { 𝕩.Da 𝕨 }¨ m.Params@
 
 xs ← Value⚇0 ⟨2,3,¯1⟩‿⟨3,¯1,0.5⟩‿⟨0.5,1,1⟩‿⟨1,1,¯1⟩
 ys ← Value¨ 1‿¯1‿¯1‿1
-yp ← @
+yp ← m.Call¨ xs
 loss ← @
 
 Descent ← {𝕤
@@ -18,8 +15,13 @@ Descent ← {𝕤
   { 𝕩.Gr 0 }¨ m.Params@
   loss.Backward@
 
-  { 𝕩.Da (𝕩.Data@) + ¯0.01 × 𝕩.Grad@ }¨ m.Params@
-  •Show loss.Data@
+  { 𝕩.Da (𝕩.Data@) + ¯0.2 × 𝕩.Grad@ }¨ m.Params@
 }
 
-Descent⍟10 @
+•Out "ground truth:"
+•Show { 𝕩.Data@ }¨ ys
+•Out "initial classification:"
+•Show { 𝕩.Data@ }¨ yp
+Descent⍟20 @
+•Out "after training:"
+•Show { 𝕩.Data@ }¨ yp
