@@ -1,43 +1,43 @@
 ⟨Value⟩ ← •Import "value.bqn"
 
-R ← {𝕤
-  (1 -˜ 2 × •rand.Range ÷ ⊢) 1 -˜ 2 ⋆ 32
+#debug ← •BQN ⊑ •FLines "debug_weights.txt"
+
+Rand ← {𝕤
+  (1 -˜ 2 × •rand.Range⊸÷) 1 -˜ 2 ⋆ 32
 }
 
 Neuron ← {
-  w ← (Value R)¨ ↕𝕩
-  b ← Value R@
-  b.La 'b'
+  weights ← Value∘Rand¨ ↕𝕩
+  bias ← Value Rand@
 
   Call ⇐ {
-    act ← b { 𝕨.Add 𝕩 }´ (w { 𝕨.Mul 𝕩 }¨ 𝕩)
+    act ← bias { 𝕨.Add 𝕩 }´ weights { 𝕨.Mul 𝕩 }¨ 𝕩
     act.Tanh@
   }
 
   Params ⇐ {𝕤
-   w ∾ b
+    weights ∾ bias
   }
 }
 
 Layer ← {
-  d‿c ← 𝕩
-  n ← (Neuron d˙)¨ ↕c
+  shape‿count ← 𝕩
+  neurons ← Neuron⟜shape¨ ↕count
 
   Call ⇐ {
-    𝕩⊸{ 𝕩.Call 𝕨 }¨ n
+    (1=≠) ◶ ⊢‿⊑ 𝕩⊸{ 𝕩.Call 𝕨 }¨ neurons
   }
 
   Params ⇐ {𝕤
-    ∾ { 𝕩.Params@ }¨ n
+    ∾ { 𝕩.Params@ }¨ neurons
   }
 }
 
 MLP ← {
-  layers ← { Layer 𝕩 }˘ 2 ↕ 𝕩
+  layers ← Layer˘ 2 ↕ 𝕩
 
   Call ⇐ {
-    o ← 𝕩 { 𝕨.Call 𝕩 }´ ⌽ layers
-    (1=≠) ◶ ⊢‿⊑ o
+    𝕩 { 𝕨.Call 𝕩 }´ ⌽ layers
   }
 
   Params ⇐ {𝕤
@@ -45,45 +45,31 @@ MLP ← {
   }
 }
 
-#asdf ← (Neuron 2).Call x
-#asdf.Gr 1
-#> { 𝕩.Show@ }¨  asdf.Backward@
-
-#l ← Layer 2‿3
-#ns ← > { 𝕩.Show@ } ¨ l.Call Value¨ 2‿3
-#> { 𝕩.Backward@ }¨ ns
-
 m ← MLP 3‿4‿4‿1
-
-#out ← m.Call Value¨ 1‿2‿3
-#out.Gr 1
-#out.Backward@
+#debug { 𝕩.Da 𝕨 }¨ m.Params@
 
 xs ← Value⚇0 ⟨2,3,¯1⟩‿⟨3,¯1,0.5⟩‿⟨0.5,1,1⟩‿⟨1,1,¯1⟩
 ys ← Value¨ 1‿¯1‿¯1‿1
-
 yp ← m.Call¨ xs
 loss ← { 𝕨.Add 𝕩 }´ yp { (𝕨.Sub 𝕩).Pow 2 }¨ ys
-•Show { 𝕩.Repr@ }¨ yp
-•Show loss.Repr@
 
-{ 𝕩.Gr 0 }¨ m.Params@
 loss.Backward@
-{ 𝕩.Da (𝕩.Repr@) + ¯0.01 × 𝕩.Grad@ }¨ m.Params@
 
-yp ↩ m.Call¨ xs
-loss ↩ { 𝕨.Add 𝕩 }´ yp { (𝕨.Sub 𝕩).Pow 2 }¨ ys
-•Show { 𝕩.Repr@ }¨ yp
-•Show loss.Repr@
+{ 𝕩.Da (𝕩.Data@) + ¯0.01 × 𝕩.Grad@ }¨ m.Params@
+•Show loss.Data@
 
-{ 𝕩.Gr 0 }¨ m.Params@
-loss.Backward@
-{ 𝕩.Da (𝕩.Repr@) + ¯0.01 × 𝕩.Grad@ }¨ m.Params@
+DoThing ← {𝕤
+  yp ↩ m.Call¨ xs
+  loss ↩ { 𝕨.Add 𝕩 }´ yp { (𝕨.Sub 𝕩).Pow 2 }¨ ys
 
-yp ↩ m.Call¨ xs
-loss ↩ { 𝕨.Add 𝕩 }´ yp { (𝕨.Sub 𝕩).Pow 2 }¨ ys
-•Show { 𝕩.Repr@ }¨ yp
-loss.Repr@
+  { 𝕩.Gr 0 }¨ m.Params@
+  loss.Backward@
+
+  { 𝕩.Da (𝕩.Data@) + ¯0.01 × 𝕩.Grad@ }¨ m.Params@
+  •Show loss.Data@
+}
+
+DoThing⍟10 @
 
 x1 ← Value 2.0
 x1.La "x1"
@@ -103,25 +89,21 @@ w2.La "w2"
 
 x1w1 ← x1.Mul w1
 #x1w1.Gr 0.5
-x1w1.Show@
 
 x2w2 ← x2.Mul w2
 #x2w2.Gr 0.5
-x2w2.Show@
 
 x1w1x2w2 ← x1w1.Add x2w2
 #x1w1x2w2.Gr 0.5
-x1w1x2w2.Show@
 
 b ← Value 6.8813735870195432
 b.La "b"
 #b.Gr 0.5
-b.Show@
 
 n ← x1w1x2w2.Add b
-#n.Gr 1 - 2 ⋆˜ (n.Tanh@).Repr@
+#n.Gr 1 - 2 ⋆˜ (n.Tanh@).Data@
 
-#o ← n.Tanh@
+#oo ← n.Tanh@
 en ← (n.Mul Value 2).Exp@
 oo ← (en.Sub Value 1).Div (en.Add Value 1)
 

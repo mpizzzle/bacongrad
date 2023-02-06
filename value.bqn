@@ -15,7 +15,7 @@ Value ⇐ {
       ⍉> lab ⋈ l‿o‿c‿d‿g
     }
 
-    Repr ⇐ {
+    Data ⇐ {
       𝕤 ⋄ d
     }
 
@@ -23,7 +23,7 @@ Value ⇐ {
       𝕤 ⋄ g
     }
 
-    Chil ⇐ {
+    Child ⇐ {
       𝕤 ⋄ c
     }
 
@@ -68,7 +68,7 @@ Value ⇐ {
 
       TopoSort ← {
         oldV ← v
-        TopoSort¨ oldV (¬∘∊/⊣)˜ ∾ { 𝕩.Chil@ }¨ 𝕩
+        TopoSort¨ oldV (¬∘∊/⊣)˜ ∾ { 𝕩.Child@ }¨ 𝕩
         v ↩ ⍷ 𝕩 ∾ v
         v
       }
@@ -79,7 +79,7 @@ Value ⇐ {
     }
 
     Apply ← {
-      out ← Value 𝕎´ { 𝕩.Repr@ }¨ 𝕩
+      out ← Value 𝕎´ { 𝕩.Data@ }¨ 𝕩
       out.Op 𝕨
       out.Ch 𝕩
       out
@@ -92,7 +92,7 @@ Value ⇐ {
       out.Ch ⋈this
 
       BB ← {𝕤
-        g ↩ g + 1 - 2 ⋆˜ (out.Repr@) × out.Grad@
+        g ↩ g + (1 - 2 ⋆˜ out.Data@) × out.Grad@
       }
 
       out.Ba bb
@@ -103,11 +103,11 @@ Value ⇐ {
       F ← +
 
       i ← 𝕩
-      out ← f Apply this ⋈ 𝕩
+      out ← f Apply this‿𝕩
 
       BB ← {𝕤
-        i.Gr (i.Grad@) + 1 × out.Grad@
-        g ↩ g + 1 × out.Grad@
+        i.Gr (i.Grad@) + out.Grad@
+        g ↩ g + out.Grad@
       }
 
       out.Ba bb
@@ -118,11 +118,11 @@ Value ⇐ {
       F ← ×
 
       i ← 𝕩
-      out ← f Apply this ⋈ 𝕩
+      out ← f Apply this‿𝕩
 
       BB ← {𝕤
         i.Gr (i.Grad@) + d × out.Grad@
-        g ↩ g + (i.Repr@) × out.Grad@
+        g ↩ g + (i.Data@) × out.Grad@
       }
 
       out.Ba bb
@@ -137,7 +137,7 @@ Value ⇐ {
       out.Ch ⋈this
 
       BB ← {𝕤
-        g ↩ g + (out.Repr@) × out.Grad@
+        g ↩ g + (out.Data@) × out.Grad@
       }
 
       out.Ba bb
