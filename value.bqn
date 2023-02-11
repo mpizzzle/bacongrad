@@ -3,7 +3,7 @@ Value ⇐ {
     this ⇐ @
     SetThis ⇐ { !this≡@ ⋄ this↩𝕩 }
 
-    O ← ⊢
+    #O ← ⊢
     B ← ⊢
     c ← ⟨⟩
     d ← 0
@@ -11,8 +11,10 @@ Value ⇐ {
     l ← ""
 
     Show ⇐ {𝕤
-      lab ← "label"‿"operation"‿"children"‿"data"‿"gradient"
-      ⍉> lab ⋈ l‿o‿c‿d‿g
+      #lab ← "label"‿"operation"‿"children"‿"data"‿"gradient"
+      #⍉> lab ⋈ l‿o‿c‿d‿g
+      lab ← "label"‿"children"‿"data"‿"gradient"
+      ⍉> lab ⋈ l‿c‿d‿g
     }
 
     Data ⇐ {
@@ -27,9 +29,9 @@ Value ⇐ {
       𝕤 ⋄ c
     }
 
-    Oper ⇐ {
-      𝕤 ⋄ o
-    }
+    #Oper ⇐ {
+    #  𝕤 ⋄ o
+    #}
 
     Label ⇐ {
       𝕤 ⋄ l
@@ -39,9 +41,9 @@ Value ⇐ {
       B ↩ 𝕏
     }
 
-    Op ⇐ {
-      O ↩ 𝕏
-    }
+    #Op ⇐ {
+    #  O ↩ 𝕏
+    #}
 
     Ch ⇐ {
       c ↩ 𝕩
@@ -80,7 +82,7 @@ Value ⇐ {
 
     Apply ← {
       out ← Value 𝕎´ { 𝕩.Data@ }¨ 𝕩
-      out.Op 𝕨
+      #out.Op 𝕨
       out.Ch 𝕩
       out
     }
@@ -88,7 +90,7 @@ Value ⇐ {
     Tanh ⇐ {𝕤
       F ← •math.Tanh
       out ← Value F d
-      out.Op f
+      #out.Op f
       out.Ch ⋈this
 
       BB ← {𝕤
@@ -133,7 +135,7 @@ Value ⇐ {
       F ← ⋆
 
       out ← Value F d
-      out.Op f
+      #out.Op f
       out.Ch ⋈this
 
       BB ← {𝕤
@@ -148,7 +150,7 @@ Value ⇐ {
       F ← ⋆⟜𝕩
       i ← 𝕩
       out ← Value F d
-      out.Op f
+      #out.Op f
       out.Ch ⋈this
 
 
@@ -176,4 +178,89 @@ Value ⇐ {
   obj.SetThis obj
   obj.Da 𝕩
   obj
+}
+
+TanhF ← ⊑ •math.Tanh
+AddF ← +´
+MulF ← ×´
+PowF ← ⋆´
+ExpF ← ⊑ ⋆
+
+TanhB ← {
+  o‿c ← 𝕨
+  g ← (⊢×1-2⋆˜⊣)´ 2 ↑ o ⊏ 𝕩
+  g⊸+⌾(1⊸⊏˘c⊸⊏) 𝕩
+}
+
+AddB ← {
+  o‿c ← 𝕨
+  g ← 1 ⊑ o ⊏ 𝕩
+  g⊸+⌾(1⊸⊏˘c⊸⊏) 𝕩
+}
+
+MulB ← {
+  o‿c ← 𝕨
+  g ← 1 ⊑ o ⊏ 𝕩
+  gs ← +⟜(⌽ g⊸×)´ <˘ ⍉ 1‿0⊸⊏˘ c ⊏ 𝕩
+  gs⌾(1⊸⊏˘c⊸⊏) 𝕩 # needs further refactoring
+}
+
+PowB ← {
+  o‿c ← 𝕨
+  g ← 1 ⊑ o ⊏ 𝕩
+  d‿i ← ⊑˘ c ⊏ 𝕩
+  { 𝕩 + g × i × d ⋆ 1 -˜ i }⌾(1⊸⊏·0⊸⊏ c⊸⊏) 𝕩
+}
+
+ExpB ← {
+  o‿c ← 𝕨
+  g ← ×´ 2 ↑ o ⊏ 𝕩
+  g⊸+⌾(1⊸⊏˘c⊸⊏) 𝕩
+}
+
+ops ← ⊢‿AddF‿MulF‿PowF‿ExpF‿TanhF
+bops ← ⊢‿AddB‿MulB‿PowB‿ExpB‿TanhB
+
+_a ← {
+  ch ← ⥊𝕩
+  vv ← 𝔽 ⊑˘ ch ⊏ 𝕨
+  op ← ⊑ / 𝕗 = ops
+  𝕨 ∾ ≍ vv‿0‿op‿ch
+}
+
+Add‿Mul‿Exp‿Pow‿Tanh ⇐ (AddF _a)‿(MulF _a)‿(ExpF _a)‿(PowF _a)‿(TanhF _a)
+
+V ⇐ { ≍ 𝕩‿0‿0‿⟨⟩ }
+Val ⇐ ∾⟜V
+
+Neg ⇐ {
+  (𝕨 Val ¯1) Mul 𝕩⋈≠𝕨
+}
+
+Sub ⇐ {
+  a‿b ← 𝕩
+  (𝕨 Neg b) Add a⋈1+≠𝕨
+}
+
+Div ⇐ {
+  a‿b ← 𝕩
+  ((𝕨 Val ¯1) Pow b⋈≠𝕨) Mul a⋈1+≠𝕨
+}
+
+Topo ← {
+  𝕩 ∾ ∾ 𝕨 Topo⚇2‿0 ¯1 ⊑ 𝕩 ⊏ 𝕨
+}
+
+BackProp ← {
+  vv ← 𝕨 ⊏ 𝕩
+  back ← bops ⊑˜ 2 ⊑ vv
+  𝕩 Back˜ 𝕨 ⋈ 3 ⊑ vv
+}
+
+Backward ⇐ {
+  t ← 𝕨 Topo 𝕩
+  i ← ⊑ t
+  w ← 1⌾(1⊸⊑ i⊸⊏) 𝕨
+
+  w BackProp´ ⌽ t
 }
