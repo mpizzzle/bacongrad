@@ -16,7 +16,7 @@ bqn classify.bqn  0.08s user 0.02s system 99% cpu 0.101 total
 
 TODO:
 * 'de-object-orient' value class, current design is atrocious
-* better support for arrays instead of just scalar values
+* better support for higher rank arrays instead of just scalar values
 
 ## dependencies:
 * [BQN](https://mlochbaum.github.io/BQN/)
