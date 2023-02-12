@@ -1,4 +1,4 @@
-#⟨Value⟩ ← •Import "value.bqn"
+#⟨Value⟩ ← •Import "value_old.bqn"
 ⟨V, Val, Add, Mul, Exp, Pow, Tanh, Neg, Sub, Div, Backward⟩ ← •Import "value.bqn"
 
 m ← V 2
@@ -22,7 +22,9 @@ m Sub↩ 11‿12
 m Val↩ 1
 m Add↩ 11‿16
 m Div↩ 15‿17
-m Backward 20
+
+m Backward↩ 20
+!¯1.5‿0.5‿1‿0 ≡ (4↑ 1⊸⊏˘ m)
 
 #x1 ← Value 2.0
 #x2 ← Value 0.0

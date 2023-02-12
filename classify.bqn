@@ -1,4 +1,4 @@
-⟨Value⟩ ← •Import "value.bqn"
+⟨Value⟩ ← •Import "value_old.bqn"
 ⟨MLP⟩ ← •Import "nn.bqn"
 
 m ← MLP 3‿4‿4‿1
