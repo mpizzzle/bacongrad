@@ -180,17 +180,11 @@ Value ⇐ {
   obj
 }
 
-TanhF ← ⊑ •math.Tanh
 AddF ← +´
 MulF ← ×´
 PowF ← ⋆´
 ExpF ← ⊑ ⋆
-
-TanhB ← {
-  o‿c ← 𝕨
-  g ← (⊢×1-2⋆˜⊣)´ 2 ↑ o ⊏ 𝕩
-  g⊸+⌾(1⊸⊏˘c⊸⊏) 𝕩
-}
+TanhF ← ⊑ •math.Tanh
 
 AddB ← {
   o‿c ← 𝕨
@@ -218,49 +212,40 @@ ExpB ← {
   g⊸+⌾(1⊸⊏˘c⊸⊏) 𝕩
 }
 
-ops ← ⊢‿AddF‿MulF‿PowF‿ExpF‿TanhF
-bops ← ⊢‿AddB‿MulB‿PowB‿ExpB‿TanhB
-
-_a ← {
-  ch ← ⥊𝕩
-  vv ← 𝔽 ⊑˘ ch ⊏ 𝕨
-  op ← ⊑ / 𝕗 = ops
-  𝕨 ∾ ≍ vv‿0‿op‿ch
+TanhB ← {
+  o‿c ← 𝕨
+  g ← (⊢×1-2⋆˜⊣)´ 2 ↑ o ⊏ 𝕩
+  g⊸+⌾(1⊸⊏˘c⊸⊏) 𝕩
 }
 
-Add‿Mul‿Exp‿Pow‿Tanh ⇐ (AddF _a)‿(MulF _a)‿(ExpF _a)‿(PowF _a)‿(TanhF _a)
+f_ops ← ⊢‿AddF‿MulF‿PowF‿ExpF‿TanhF
+b_ops ← ⊢‿AddB‿MulB‿PowB‿ExpB‿TanhB
+
+_a ← {
+  c ← ⥊𝕩
+  v ← 𝔽 ⊑˘ c ⊏ 𝕨
+  o ← ⊑ / 𝕗 = f_ops
+  𝕨 ∾ ≍ v‿0‿o‿c
+}
+
+_x_ ← {
+  a‿b ← 𝕩
+  (𝕨 𝔽 b) 𝔾 a ⋈ 1 + ≠𝕨
+}
+
+Propagate ← {
+  op‿ch ← 𝕨 (2‿3 ⊏ ⊏) 𝕩
+  𝕨 ⋈⟜ch⊸(op ◶ b_ops) 𝕩
+}
+
+InitGrad ← { 1⌾(1⊸⊑ 𝕩⊸⊏) 𝕨 }
 
 V ⇐ { ≍ 𝕩‿0‿0‿⟨⟩ }
 Val ⇐ ∾⟜V
-
-Neg ⇐ {
-  (𝕨 Val ¯1) Mul 𝕩⋈≠𝕨
-}
-
-Sub ⇐ {
-  a‿b ← 𝕩
-  (𝕨 Neg b) Add a⋈1+≠𝕨
-}
-
-Div ⇐ {
-  a‿b ← 𝕩
-  ((𝕨 Val ¯1) Pow b⋈≠𝕨) Mul a⋈1+≠𝕨
-}
-
-Topo ← {
-  𝕩 ∾ ∾ 𝕨 Topo⚇2‿0 ¯1 ⊑ 𝕩 ⊏ 𝕨
-}
-
-BackProp ← {
-  vv ← 𝕨 ⊏ 𝕩
-  back ← bops ⊑˜ 2 ⊑ vv
-  𝕩 Back˜ 𝕨 ⋈ 3 ⊑ vv
-}
-
-Backward ⇐ {
-  t ← 𝕨 Topo 𝕩
-  i ← ⊑ t
-  w ← 1⌾(1⊸⊑ i⊸⊏) 𝕨
-
-  w BackProp´ ⌽ t
-}
+Add‿Mul‿Exp‿Pow‿Tanh ⇐ (AddF _a)‿(MulF _a)‿(ExpF _a)‿(PowF _a)‿(TanhF _a)
+Neg ⇐ Val⟜¯1 Mul ⋈⟜≠˜
+Rec ⇐ Val⟜¯1 Pow ⋈⟜≠˜
+Sub ⇐ Neg _x_ Add
+Div ⇐ Rec _x_ Mul
+TopoSort ⇐ { 𝕩 ∾ ∾𝕨 𝕊⚇2‿0 ¯1 ⊑ 𝕩 ⊏ 𝕨 }
+Backward ⇐ ⊣ (InitGrad⟜⊑ Propagate´ ⌽∘⊢) TopoSort
