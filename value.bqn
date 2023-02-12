@@ -1,18 +1,10 @@
-_monad ← {
-  out‿children ← 𝕨
-  grads ← 𝔽´ 2 ↑ out ⊏ 𝕩
-  grads⊸+⌾(1⊸⊏˘children⊸⊏) 𝕩
-}
+_monad ← { 𝔽´ 2 ↑ 𝕩 }
+_dyad ← { (1 ⊑ 𝕩) × 𝔽 𝕨 }
 
-_dyad ← {
+_derive ← {
   out‿children ← 𝕨
-  grads ← (1 ⊑ out ⊏ 𝕩) × 𝔽 children ⊏ 𝕩
+  grads ← (children ⊏ 𝕩) 𝔽 (out ⊏ 𝕩)
   grads⊸+⌾(1⊸⊏˘children⊸⊏) 𝕩
-}
-
-_compose_ ← {
-  a‿b ← 𝕩
-  (𝕨 𝔽 b) 𝔾 a ⋈ 1 + ≠𝕨
 }
 
 _apply ← {
@@ -21,6 +13,8 @@ _apply ← {
   op ← ⊑ / 𝕗 = f_ops
   𝕨 ∾ ≍ value‿0‿op‿children
 }
+
+_compose_ ← { (𝕨 𝔽 1⊑𝕩) 𝔾 (⊑𝕩) ⋈ 1 + ≠𝕨 }
 
 Add ⇐ (AddF ← +´)_apply
 Mul ⇐ (MulF ← ×´)_apply
@@ -36,11 +30,11 @@ Sub ⇐ Neg _compose_ Add
 Div ⇐ Rec _compose_ Mul
 TopoSort ⇐ ⍷ { 𝕩 ∾˜ ∾𝕨 𝕊⚇2‿0 ¯1 ⊑ 𝕩 ⊏ 𝕨 }
 
-ExpB ← ×_monad
-TanhB ← (⊢×1-2⋆˜⊣)_monad
-AddB ← 1˙_dyad
-MulB ← (⌽⊑˘)_dyad
-PowB ← ((⊢×⊣⋆1-˜⊢)´⊑˘)_dyad
+ExpB ← ×_monad _derive
+TanhB ← (⊢×1-2⋆˜⊣)_monad _derive
+AddB ← 1˙_dyad _derive
+MulB ← (⌽⊑˘)_dyad _derive
+PowB ← ((⊢×⊣⋆1-˜⊢)´⊑˘)_dyad _derive
 
 f_ops ← ⊢‿AddF‿MulF‿PowF‿ExpF‿TanhF
 b_ops ← ⊢‿AddB‿MulB‿PowB‿ExpB‿TanhB
