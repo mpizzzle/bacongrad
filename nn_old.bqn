@@ -1,4 +1,4 @@
-⟨Value⟩ ← •Import "value.bqn"
+⟨Value⟩ ← •Import "value_old.bqn"
 
 Rand ← {𝕤
   (1 -˜ 2 × •rand.Range⊸÷) 1 -˜ 2 ⋆ 32
