@@ -1,53 +1,44 @@
 ⟨Init, Val, Add, Sub, Mul, Pow, Tanh, Backward⟩ ← •Import "value.bqn"
-
-Rand ← (1 -˜ 2 × •rand.Range⊸÷) 1 -˜ 2 ⋆ 32˙
-Ranges ← ×´˘ 1‿0 +⎉1 2⊸↕
-Group ← ⌊∘÷˜⟜(↕≠)⊔⊢
-Ind ← ≠⊸+⟜↕-⊢
+⟨Rand, Group, Last, _l⟩ ← •Import "util.bqn"
 
 Layer ← {
-  matty ← 𝕨
-  in‿out ← 𝕩
-  sin‿sout ← in ⋈○≠ out
-  weights‿biases ← sin (∾¨ ↑¨ ⋈ ¯1⊸↑¨) out
+  in ← (m ← 𝕨) Last 1 -˜ ≠ ⊑ out ← 𝕩
+  weights‿biases ← in ≠⊸(∾¨ ↑¨ ⋈ ¯1⊸↑¨) out
 
-  matty Mul˜´↩ ⌽ weights ≍¨˜ ∾ sout / ⋈ in
-  matty Add˜´↩ ⌽ biases ∾¨ sin Group matty Ind sin × sout
-  matty Tanh˜´↩ ⌽ matty Ind sout
+  m Mul _l↩ weights ≍¨˜ ∾ out ≠⊸/ ⋈ in
+  m Add _l↩ biases ∾¨ in (⊣ Group m Last ×)○≠ out
+  m Tanh _l m Last ≠out
 }
 
 shape ← 3‿4‿4‿1
 input ← ⟨2,3,¯1⟩‿⟨3,¯1,0.5⟩‿⟨0.5,1,1⟩‿⟨1,1,¯1⟩
 truth ← 1‿¯1‿¯1‿1
-mlp ← ∾ Init∘Rand¨ ↕ +´ Ranges shape
-params ← ≠mlp
-offsets ← 1 -˜ params + (1+↕4) × 4 ÷˜ params -˜ 253 #???
-address ← (⌽ ¯1⊸↓ (⊣ ⋈ 1⊸+⊸Group)¨⟜(↕¨++`⊸-) Ranges) shape
+ranges ← ×´˘ 1‿0 +⎉1 2⊸↕ shape
+params ← ranges Group¨⟜(↕¨++`⊸-)˜ 1 + ¯1 ↓ shape
+mlp ← ∾ Init∘Rand¨ ↕ p ← +´ ranges
+offsets ← 93‿146‿199‿252 #???
 
-Call ← Val˜´⟜⌽˜ (⊢ Layer Ind⟜⊑˜ ⋈ 1⊸⊑˜)´ address˙
+Call ← Val _l Layer _l params˙
 
-Loss ← { #truth, offsets, matty ???
-  matty ← 𝕩
-  matty Val˜´↩ ⌽ truth
-  matty Sub˜´↩ ⌽ offsets ⋈¨ matty Ind 4
-  subs ← 2‿5‿8‿11 ⊏ matty Ind 12 #???
-  matty Val˜´↩ ⌽ 4/≍2
-  matty Pow˜´↩ ⌽ subs ⋈¨ matty Ind 4
-  matty Add ⌽ matty Ind 4
+Loss ← {
+  m ← 𝕩 Val _l truth
+  m Sub _l↩ offsets ⋈¨ m Last si ← ≠input
+  m Val _l↩ si/≍2
+  m Pow _l↩ (si -˜ 2‿5‿8‿11 ⊏ m Last 3 × si) ⋈¨ m Last si #???
+  m Add ⌽ m Last si
 }
 
-Desc ← {
-  matty ← 𝕩
-  matty ↩ (⊢⋈˜⊣+¯0.2⊸×)´˘⌾(2⊸↑˘) params⊸↑ matty
-  matty Call´↩ ⌽ input
-  matty ↩ Loss matty
-  matty ↩ 0˘⌾(1⊸⊏˘) matty
-  matty Backward↩ 1 -˜ ≠matty
+Descent ← {
+  m ← (⊢⋈˜⊣+¯0.2⊸×)´˘⌾(2⊸↑˘) 𝕩 ↑˜ p # should be last op not first
+  m Call _l↩ input
+  m ↩ Loss m
+  m ↩ 0˘⌾(1⊸⊏˘) m
+  m Backward 1 -˜ ≠m
 }
 
 •Out "ground truth:"
 •Show truth
 •Out "initial classification:"
-•Show ⊑˘ offsets ⊏ mlp Call´ ⌽ input
+•Show ⊑˘ offsets ⊏ mlp Call _l input
 •Out "after training:"
-•Show ⊑˘ offsets ⊏ Desc⍟20 mlp
+•Show ⊑˘ offsets ⊏ Descent⍟20 mlp
