@@ -4,7 +4,7 @@ A naïve implementation of [micrograd](https://github.com/karpathy/micrograd), w
 the test/ classify examples mirror the problems solved in Andrej's video [building micrograd](https://www.youtube.com/watch?v=VMj-3S1tku0).
 
 ```
-bqn ./classify.bqn
+time bqn ./classify.bqn
 ground truth:
 ⟨ 1 ¯1 ¯1 1 ⟩
 initial classification:
@@ -15,8 +15,9 @@ bqn classify.bqn  0.08s user 0.02s system 99% cpu 0.101 total
 ```
 
 TODO:
-* 'de-object-orient' value class, current design is atrocious
+* add index utility functions to retrieve offsets
 * better support for higher rank arrays instead of just scalar values
+* fix backward pass performance (⌾ for each row is a no no)
 
 ## dependencies:
 * [BQN](https://mlochbaum.github.io/BQN/)
