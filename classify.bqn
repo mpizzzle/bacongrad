@@ -29,11 +29,11 @@ Loss ← {
 }
 
 Descent ← {
-  m ← (⊢⋈˜⊣+¯0.2⊸×)´˘⌾(2⊸↑˘) 𝕩 ↑˜ p # should be last op not first
-  m Call _l↩ input
+  m ← (p↑𝕩) Call _l input
   m ↩ Loss m
   m ↩ 0˘⌾(1⊸⊏˘) m
-  m Backward 1 -˜ ≠m
+  m Backward↩ 1 -˜ ≠m
+  (⊢⋈˜⊣+¯0.2⊸×)´˘⌾(2⊸↑˘p⊸↑) m
 }
 
 •Out "ground truth:"

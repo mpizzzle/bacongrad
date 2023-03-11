@@ -40,7 +40,7 @@ f_ops ← ⊢‿AddF‿MulF‿PowF‿ExpF‿TanhF
 b_ops ← ⊢‿AddB‿MulB‿PowB‿ExpB‿TanhB
 
 Propagate ← {
-  op‿ch ← 2‿3 ⊏ 𝕨 ⊏ 𝕩
+  op‿ch ← ¯2 ↑ 𝕨 ⊏ 𝕩
   𝕨 ⋈⟜ch⊸(op ◶ b_ops) 𝕩
 }
 
